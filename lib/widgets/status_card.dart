@@ -5,12 +5,16 @@ class StatusCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color iconColor;
+  final bool switchValue; // Switch value
+  final Function(bool) onSwitchChanged; // Callback for switch change
 
   const StatusCard({
     required this.title,
     required this.value,
     required this.icon,
     required this.iconColor,
+    required this.switchValue,
+    required this.onSwitchChanged,
   });
 
   @override
@@ -39,6 +43,13 @@ class StatusCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ),
+            // Switch widget
+            Switch(
+              value: switchValue,
+              onChanged: onSwitchChanged,
+              activeColor: Colors.green,
+              inactiveThumbColor: Colors.red,
             ),
           ],
         ),

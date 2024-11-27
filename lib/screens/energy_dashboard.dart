@@ -59,16 +59,18 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Display energy consumption
+                // Display energy consumption with switch
                 StatusCard(
                   title: "Energy Consumption",
-                  value: provider.energyConsumption,
+                  value: provider.energyConsumption + " kWh",
                   icon: Icons.energy_savings_leaf,
                   iconColor: Colors.green,
+                  switchValue: false, // No switch for energy consumption
+                  onSwitchChanged: (value) {},
                 ),
                 SizedBox(height: 16),
 
-                // Display windows dynamically
+                // Display windows dynamically with switches
                 ...provider.windows.map((window) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -78,19 +80,51 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                       icon: Icons.window,
                       iconColor:
                           window["status"] == "Closed" ? Colors.blue : Colors.red,
+                      switchValue: window["status"] == "Open",
+                      onSwitchChanged: (value) {
+                        // Show progress bar while data is being fetched
+                        setState(() {
+                          provider.isLoading = true;
+                        });
+
+                        // Send the data to change the window status
+                        provider.changeDeviceStatus(
+                          window["id"].toString(),  // Device ID
+                          value ? "on" : "off",  // Status
+                          "Window",  // Device type
+                        );
+                        provider.toggleWindowStatus(window["id"]);
+                      },
                     ),
                   );
                 }).toList(),
 
                 SizedBox(height: 16),
 
-                // Display AC status
+                // Display AC status with switch
                 StatusCard(
-                  title: 'AC',
+                  title: "AC",
                   value: provider.acStatus,
                   icon: Icons.ac_unit,
                   iconColor:
                       provider.acStatus == "On" ? Colors.blue : Colors.grey,
+                  switchValue: provider.acStatus == "On",
+                  onSwitchChanged: (value) async {
+                    // Show progress bar while data is being fetched
+                    setState(() {
+                      provider.isLoading = true;
+                    });
+
+                    // Send the data to change the AC status
+                    await provider.changeDeviceStatus(
+                      provider.ac_id.toString(),  // Replace with actual AC device ID
+                      value ? "on" : "off",  // Status
+                      "AC",  // Device type
+                    );
+
+                    // Update the provider with new AC status
+                    provider.toggleACStatus(value ? "On" : "Off");
+                  },
                 ),
               ],
             ),
