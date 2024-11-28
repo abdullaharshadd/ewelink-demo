@@ -33,11 +33,11 @@ class RoomStatusProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleWindowStatus(int windowId) {
+  void toggleWindowStatus(String windowId) {
     int index = _windows.indexWhere((window) => window["id"] == windowId);
     if (index != -1) {
       _windows[index]["status"] =
-          (_windows[index]["status"] == "Closed") ? "Open" : "Closed";
+          (_windows[index]["status"] == "off") ? "on" : "off";
       notifyListeners();
     }
   }
@@ -53,9 +53,12 @@ class RoomStatusProvider extends ChangeNotifier {
   }
 
   // Fetch data from API
-  Future<void> fetchWindowsFromApi() async {
-    const String apiUrl = "https://ewelink-backend.onrender.com/devices-info"; // Replace with your actual API endpoint
+  Future<void> fetchWindowsFromApi(latestRequired) async {
+    String apiUrl = "https://ewelink-backend.onrender.com/devices-info"; // Replace with your actual API endpoint
 
+    if (latestRequired) {
+      apiUrl = apiUrl + "?latestRequired=" + latestRequired.toString();
+    }
     isLoading = true;  // Use the setter to update isLoading state
 
     try {
@@ -140,6 +143,9 @@ class RoomStatusProvider extends ChangeNotifier {
         textColor: Colors.white,
         fontSize: 16.0
       );
+      if (!data["message"].toString().toLowerCase().contains("not")) {
+        toggleWindowStatus(deviceId.toString());
+      }
       } else {
         Fluttertoast.showToast(
         msg: data["message"],

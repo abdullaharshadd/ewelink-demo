@@ -44,13 +44,15 @@ class StatusCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Switch widget
+            title != "Energy Consumption" ? 
+              // Switch widget
             Switch(
               value: switchValue,
               onChanged: onSwitchChanged,
               activeColor: Colors.green,
               inactiveThumbColor: Colors.red,
-            ),
+            ) : Container(height: 0)
+            
           ],
         ),
       ),

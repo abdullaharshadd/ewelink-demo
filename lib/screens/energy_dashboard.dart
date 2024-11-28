@@ -15,7 +15,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
     // Fetch data before the page loads
     Future.microtask(() {
       Provider.of<RoomStatusProvider>(context, listen: false)
-          .fetchWindowsFromApi();
+          .fetchWindowsFromApi(false);
     });
   }
 
@@ -33,7 +33,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
             onPressed: () {
               // Refresh data by calling fetchWindowsFromApi
               Provider.of<RoomStatusProvider>(context, listen: false)
-                  .fetchWindowsFromApi();
+                  .fetchWindowsFromApi(true);
             },
           ),
         ],
@@ -80,7 +80,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                       icon: Icons.window,
                       iconColor:
                           window["status"] == "Closed" ? Colors.blue : Colors.red,
-                      switchValue: window["status"] == "Open",
+                      switchValue: window["status"] == "on",
                       onSwitchChanged: (value) {
                         // Show progress bar while data is being fetched
                         setState(() {
@@ -93,7 +93,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                           value ? "on" : "off",  // Status
                           "Window",  // Device type
                         );
-                        provider.toggleWindowStatus(window["id"]);
+                        //provider.toggleWindowStatus(window["id"]);
                       },
                     ),
                   );
@@ -107,8 +107,8 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                   value: provider.acStatus,
                   icon: Icons.ac_unit,
                   iconColor:
-                      provider.acStatus == "On" ? Colors.blue : Colors.grey,
-                  switchValue: provider.acStatus == "On",
+                      provider.acStatus == "on" ? Colors.blue : Colors.grey,
+                  switchValue: provider.acStatus == "on",
                   onSwitchChanged: (value) async {
                     // Show progress bar while data is being fetched
                     setState(() {
@@ -123,7 +123,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                     );
 
                     // Update the provider with new AC status
-                    provider.toggleACStatus(value ? "On" : "Off");
+                    //provider.toggleACStatus(value ? "on" : "off");
                   },
                 ),
               ],
