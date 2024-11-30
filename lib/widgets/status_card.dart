@@ -46,10 +46,17 @@ class StatusCard extends StatelessWidget {
             ),
             title != "Energy Consumption" ? 
               // Switch widget
-            Switch(
+            title.contains("Window") ? Text(
+              value == 'off' ? 'Closed' : 'Open',
+              style: TextStyle(
+                fontWeight: FontWeight.bold, // Makes the text bold
+                color: Colors.green,         // Makes the text green
+              ),
+            )
+            : Switch(
               value: switchValue,
               onChanged: onSwitchChanged,
-              activeColor: Colors.green,
+              activeColor: Colors.blue,
               inactiveThumbColor: Colors.red,
             ) : Container(height: 0)
             

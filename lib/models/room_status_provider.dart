@@ -29,7 +29,7 @@ class RoomStatusProvider extends ChangeNotifier {
   }
 
   void toggleAcStatus() {
-    _acStatus = (_acStatus == "On") ? "Off" : "On";
+    _acStatus = (_acStatus == "on") ? "off" : "on";
     notifyListeners();
   }
 
@@ -144,7 +144,11 @@ class RoomStatusProvider extends ChangeNotifier {
         fontSize: 16.0
       );
       if (!data["message"].toString().toLowerCase().contains("not")) {
-        toggleWindowStatus(deviceId.toString());
+        if (deviceType == 'AC') {
+          toggleAcStatus();
+        } else {
+            toggleWindowStatus(deviceId.toString());
+        }
       }
       } else {
         Fluttertoast.showToast(

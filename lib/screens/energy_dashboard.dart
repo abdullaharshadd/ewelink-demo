@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/room_status_provider.dart';
@@ -9,14 +10,30 @@ class EnergyDashboard extends StatefulWidget {
 }
 
 class _EnergyDashboardState extends State<EnergyDashboard> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
-    // Fetch data before the page loads
+
+    // Fetch initial data
     Future.microtask(() {
       Provider.of<RoomStatusProvider>(context, listen: false)
           .fetchWindowsFromApi(false);
     });
+
+    // Set up a periodic timer to refresh data every 15 seconds
+    _timer = Timer.periodic(Duration(seconds: 15), (timer) {
+      Provider.of<RoomStatusProvider>(context, listen: false)
+          .fetchWindowsFromApi(false);
+    });
+  }
+
+  @override
+  void dispose() {
+    // Cancel the timer when the widget is disposed
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -26,17 +43,6 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
         title: Text('Room Energy Monitor'),
         centerTitle: true,
         backgroundColor: Colors.blueAccent,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.refresh),
-            tooltip: 'Refresh Data',
-            onPressed: () {
-              // Refresh data by calling fetchWindowsFromApi
-              Provider.of<RoomStatusProvider>(context, listen: false)
-                  .fetchWindowsFromApi(true);
-            },
-          ),
-        ],
       ),
       body: Consumer<RoomStatusProvider>(
         builder: (context, provider, _) {
@@ -59,7 +65,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Display energy consumption with switch
+                // Display energy consumption
                 StatusCard(
                   title: "Energy Consumption",
                   value: provider.energyConsumption + " kWh",
@@ -75,7 +81,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),
                     child: StatusCard(
-                      title: "Window ${window["id"]}",
+                      title: "${window['name']}\nID: (${window["id"]})",
                       value: window["status"],
                       icon: Icons.window,
                       iconColor:
@@ -93,7 +99,6 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                           value ? "on" : "off",  // Status
                           "Window",  // Device type
                         );
-                        //provider.toggleWindowStatus(window["id"]);
                       },
                     ),
                   );
@@ -121,9 +126,6 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
                       value ? "on" : "off",  // Status
                       "AC",  // Device type
                     );
-
-                    // Update the provider with new AC status
-                    //provider.toggleACStatus(value ? "on" : "off");
                   },
                 ),
               ],
