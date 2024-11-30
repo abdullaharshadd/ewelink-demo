@@ -25,7 +25,7 @@ class _EnergyDashboardState extends State<EnergyDashboard> {
     // Set up a periodic timer to refresh data every 15 seconds
     _timer = Timer.periodic(Duration(seconds: 15), (timer) {
       Provider.of<RoomStatusProvider>(context, listen: false)
-          .fetchWindowsFromApi(false);
+          .fetchWindowsFromApi(true);
     });
   }
 
